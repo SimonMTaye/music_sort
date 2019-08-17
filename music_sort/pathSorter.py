@@ -4,7 +4,7 @@ class pathSorter:
 
 
     ## Choose which properties will be used to Sort Songs (read throuh python parameters for better opitons but use tuples for now)
-    def _inti_(self, sortUsing: tuple, songMetadata):
+    def _init_(self, sortUsing: tuple, songMetadata):
         self.chosenAttributes = sortUsing
         for attribute in self.chosenAttributes:
             if(attribute not in ['title', 'album', 'artist', 'genre', 'bitrate','albumartist']):
@@ -14,7 +14,7 @@ class pathSorter:
     def createDir(self):
         self.newDir = ""
         for property in self.chosenAttributes:
-            self.newDir = self.newDir + '/' + str(self.selectedSong[property])
+            self.newDir = self.newDir + '/' + str(getattr(self.selectedSong, property))
         self.newDir = os.path.normpath(self.newDir)    
         os.makedirs(self.newDir, exist_ok=True)
         
