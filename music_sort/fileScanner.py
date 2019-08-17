@@ -9,14 +9,14 @@ def scanFolder (dir: str, wantedFileTypes: list):
     return wantedFiles        
 
 def scanFolderRecursively (dir: str, wantedFileTypes: list):
-    watnedFiles = []
+    wantedFiles = []
     stuffInDir = os.scandir(dir)
     for thing in stuffInDir:
         if(thing.is_file and correctFileType(thing.name, wantedFileTypes)):
-            watnedFiles.append(thing.path)
+            wantedFiles.append(thing.path)
         elif(thing.is_dir):
             scanFolderRecursively(thing.path, wantedFileTypes)    
-    return watnedFiles             
+    return wantedFiles             
 
 
 def correctFileType(fileName: str, wantedFileTypes: list):
