@@ -4,7 +4,7 @@ import fuzzywuzzy, shutil
 
 class duplicateManager:
 
-    def _init_(self, songList):
+    def __init__(self, songList):
         self.songList = songList
         self.duplicateSongList = []
 

@@ -4,7 +4,7 @@ class pathSorter:
 
 
     ## Choose which properties will be used to Sort Songs (read throuh python parameters for better opitons but use tuples for now)
-    def _init_(self, sortUsing: tuple, songMetadata):
+    def __init__(self, sortUsing: tuple, songMetadata):
         self.chosenAttributes = sortUsing
         for attribute in self.chosenAttributes:
             if(attribute not in ['title', 'album', 'artist', 'genre', 'bitrate','albumartist']):
