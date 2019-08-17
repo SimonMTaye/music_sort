@@ -7,7 +7,7 @@ class pathSorter:
     def __init__(self, sortUsing: tuple, songMetadata):
         self.chosenAttributes = sortUsing
         for attribute in self.chosenAttributes:
-            if(attribute not in ['title', 'album', 'artist', 'genre', 'bitrate','albumartist']):
+            if(attribute not in ['album', 'artist', 'genre', 'bitrate','albumartist']):
                 del self.chosenAttributes[attribute]
         self.selectedSong = songMetadata
     
