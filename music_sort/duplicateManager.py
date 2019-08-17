@@ -14,8 +14,9 @@ class duplicateManager:
             artistSimilarity = fuzzywuzzy.fuzz.token_set_ratio(oldSong.artist, newSong.artist)
             if((artistSimilarity + titleSimilarity) / 2 > 0.85 ):
                 self.handleDuplicate(newSong, index)
+                return index
         ## -1 Duplicate value shows song doesn't exist in list        
-        return ({'isDuplicate': False, 'index': -1})
+        return -1
 
     def handleDuplicate (self, duplicateSong, originalSongIndex):
         originalSong = self.songList[originalSongIndex]
