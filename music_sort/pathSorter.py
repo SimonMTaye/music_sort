@@ -13,7 +13,7 @@ class pathSorter:
         self.initialDir = initialDir
     
     def createDir(self):
-        self.newDir = self.initialDir
+        self.newDir = os.path.join(self.initialDir, 'Sorted')
         for property in self.chosenAttributes:
             self.newDir = os.path.join(self.newDir, str(getattr(self.selectedSong, property)))
         self.newDir = os.path.normpath(self.newDir)    
