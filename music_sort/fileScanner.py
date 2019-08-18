@@ -1,7 +1,8 @@
 import os
 
+wantedFiles = []
+
 def scanFolder (dir: str, wantedFileTypes: list):
-    wantedFiles = []
     filesInDir = os.scandir(dir)
     for file in filesInDir:
         if(file.is_file and correctFileType(file.name, wantedFileTypes)):
@@ -9,7 +10,6 @@ def scanFolder (dir: str, wantedFileTypes: list):
     return wantedFiles        
 
 def scanFolderRecursively (dir: str, wantedFileTypes: list):
-    wantedFiles = []
     stuffInDir = os.scandir(dir)
     for thing in stuffInDir:
         if(thing.is_file and correctFileType(thing.name, wantedFileTypes)):

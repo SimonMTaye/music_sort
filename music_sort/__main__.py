@@ -1,8 +1,8 @@
 import fire
 
-from . import duplicateManager, metadataParser, pathSorter, fileScanner
+import duplicateManager, metadataParser, pathSorter, fileScanner
 
-def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), musicFileTypes=['mp3','m4a','flac']):
+def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), musicFileTypes=['mp3','m4a','flac']):
     for property in sortingProperties:
         if property not in ['artist', 'genre','album', 'bitrate', 'albumartist']:
             raise ValueError('Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate" or "albumartist"')
@@ -17,10 +17,10 @@ def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), musicF
     for file in scannedFiles:
         metadata = metadataParser.parseSong(file)
         parsedSongs.append(metadata)
-    duplicateMan = duplicateManager.duplicateManager(parsedSongs)
+    duplicateMan = duplicateManager.duplicateManager(parsedSongs, dir)
     duplicateMan.checkForDuplicates()
     for song in parsedSongs:
-        pathMan = pathSorter.pathSorter(sortingProperties, song)
+        pathMan = pathSorter.pathSorter(sortingProperties, song, dir)
         pathMan.createDir()
         pathMan.moveSong()
 
