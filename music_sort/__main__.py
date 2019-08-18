@@ -19,6 +19,9 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
         parsedSongs.append(metadata)
     duplicateMan = duplicateManager.duplicateManager(parsedSongs, dir)
     duplicateMan.checkForDuplicates()
+    duplicateMan.handleDuplicates()
+    duplicateMan.sortDuplicates()
+    parsedSongs = duplicateMan.checkedSongList
     for song in parsedSongs:
         pathMan = pathSorter.pathSorter(sortingProperties, song, dir)
         pathMan.createDir()
