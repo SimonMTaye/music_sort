@@ -16,10 +16,18 @@ class pathSorter:
         self.newDir = os.path.join(self.initialDir, 'Sorted')
         for property in self.chosenAttributes:
             self.newDir = os.path.join(self.newDir, str(getattr(self.selectedSong, property)))
-        self.newDir = os.path.normpath(self.newDir)    
+        self.newDir = os.path.normpath(self.newDir)
+        self.removeForbiddenCharacters()    
         os.makedirs(self.newDir, exist_ok=True)
+
+    def removeForbiddenCharacters (self):
+        forbiddenList = [  ':' , '*' , '?' , '"' , '>' , '<' , '|' , r'/' , '\\' ]  
+        for character in forbiddenList:
+          self.newDir = self.newDir.replace(character, '') 
         
     
     def moveSong(self):
         if(not os.path.exists(os.path.join(self.newDir, self.selectedSong.name))):
             shutil.move(self.selectedSong.path, self.newDir)
+
+    ## \/ : * ? " < > |
