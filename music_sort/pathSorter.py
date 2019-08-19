@@ -21,7 +21,7 @@ class pathSorter:
         os.makedirs(self.newDir, exist_ok=True)
 
     def removeForbiddenCharacters (self):
-        forbiddenList = [  ':' , '*' , '?' , '"' , '>' , '<' , '|' , r'/' , '\\' ]  
+        forbiddenList = [  ':' , '*' , '?' , '"' , '>' , '<' , '|']  
         for character in forbiddenList:
           self.newDir = self.newDir.replace(character, '') 
         
