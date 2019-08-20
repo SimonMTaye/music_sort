@@ -10,7 +10,11 @@ def scanFolder (dir: str, wantedFileTypes: list):
     return wantedFiles        
 
 def scanFolderRecursively (dir: str, wantedFileTypes: list):
-    stuffInDir = os.scandir(dir)
+    try:
+        stuffInDir = os.scandir(dir)
+    except FileNotFoundError:
+        stuffInDir = []
+        pass  
     for thing in stuffInDir:
         if(thing.is_file and correctFileType(thing.name, wantedFileTypes)):
             wantedFiles.append(thing.path)
