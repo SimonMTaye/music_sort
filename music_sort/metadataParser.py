@@ -5,8 +5,13 @@ def parseSong(songPath: str):
     metadata = TinyTag.get(songPath)
     metadata.path = songPath
     metadata.name = basename(songPath)
+    cleanMetadata(metadata)
     return metadata
 
-##def cleanMetadata(metadata):
-    ## For everyattribute, check if type is list, str or number. If not set to unknown
-    ## If value is a list, extract into single string for easy dir creation
+def cleanMetadata(metadata):
+    criticalProperties = ['artist', 'genre','album', 'albumartist']
+    for property in criticalProperties:
+        if  type(getattr(metadata, property, 'Unknown')) != str:
+            setattr(metadata, property, 'Unknown')
+    if type(getattr(metadata, 'bitrate')) != float or type(getattr(metadata, 'bitrate')) != int: 
+        setattr(metadata, 'bitrate', 'Unknown')        
