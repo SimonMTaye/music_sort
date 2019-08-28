@@ -10,20 +10,16 @@ class pathSorter:
             if(attribute not in ['album', 'artist', 'genre', 'bitrate','albumartist']):
                 del self.chosenAttributes[attribute]
         self.selectedSong = songMetadata
-        self.initialDir = initialDir
-    
-    def createDir(self):
-        self.newDir = os.path.join(self.initialDir,'Sorted')
+        self.newDir = 'Sorted'
         for property in self.chosenAttributes:
             self.newDir = os.path.join(self.newDir, str(getattr(self.selectedSong, property)))
         self.newDir = os.path.normpath(self.newDir)
         self.checkPathValidity()
-        try:    
-            os.makedirs(self.newDir, exist_ok=True)
-        except:
-            print('Error Processing: ' + self.selectedSong.name)    
-            pass    
+        self.newDir = os.path.join(initialDir, self.newDir)
+        os.makedirs(self.newDir, exist_ok=True)
+        shutil.move(self.selectedSong.path, self.newDir)
 
+    ## TODO make sure that every parent directory also obeys file naming rules
     def checkPathValidity (self):
         forbiddenCharacterList = [  ':' , '*' , '?' , '"' , '>' , '<' , '|']  
         forbiddenNameList = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 
@@ -38,20 +34,7 @@ class pathSorter:
         if name in forbiddenNameList:
             raise IllegalFileNameError('Illegal file name: ' + name)
         if nameWithoutExt.endswith('.'):
-            name = nameWithoutExt[:len(nameWithoutExt) - 1] + ext
-
-    
-    
-    def moveSong(self):
-##        if(not os.path.exists(os.path.join(self.newDir, self.selectedSong.name))):
-        try:
-            shutil.move(self.selectedSong.path, self.newDir)
-        except:
-            print('Error moving: ' + self.selectedSong.name) 
-            pass   
-
-## Add function to make sure path is valid windows path
-    ## \/ : * ? " < > |
+            name = nameWithoutExt[:len(nameWithoutExt) - 1] + ext          
 
 class IllegalFileNameError (Exception):
     pass
