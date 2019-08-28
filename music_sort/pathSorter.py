@@ -13,8 +13,8 @@ class pathSorter:
         self.newDir = 'Sorted'
         for property in self.chosenAttributes:
             self.newDir = os.path.join(self.newDir, str(getattr(self.selectedSong, property)))
+            self.checkPathValidity()
         self.newDir = os.path.normpath(self.newDir)
-        self.checkPathValidity()
         self.newDir = os.path.join(initialDir, self.newDir)
         os.makedirs(self.newDir, exist_ok=True)
         shutil.move(self.selectedSong.path, self.newDir)
