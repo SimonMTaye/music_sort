@@ -2,8 +2,6 @@ import os, shutil
 
 class pathSorter:
 
-
-    ## Choose which properties will be used to Sort Songs (read throuh python parameters for better opitons but use tuples for now)
     def __init__(self, sortUsing: tuple, songMetadata, initialDir):
         self.chosenAttributes = sortUsing
         for attribute in self.chosenAttributes:
@@ -19,7 +17,6 @@ class pathSorter:
         os.makedirs(self.newDir, exist_ok=True)
         shutil.move(self.selectedSong.path, self.newDir)
 
-    ## TODO make sure that every parent directory also obeys file naming rules
     def checkPathValidity (self):
         forbiddenCharacterList = [  ':' , '*' , '?' , '"' , '>' , '<' , '|']  
         forbiddenNameList = ['CON', 'PRN', 'AUX', 'NUL', 'COM1', 'COM2', 'COM3', 
