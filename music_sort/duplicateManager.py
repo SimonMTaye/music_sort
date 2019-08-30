@@ -25,8 +25,8 @@ class duplicateManager:
             pool = multiprocessing.Pool(multiprocessing.cpu_count())
             serializedSongList = pool.map(pickle.dumps, self.songList)
             pool.map(self.isDuplicateSerialiaztionHandler, serializedSongList)
-                        
-                
+
+
     def isDuplicate(self, uncheckedSong):
         duplicate = False
         if len(self.checkedSongList) == 0:
@@ -38,10 +38,21 @@ class duplicateManager:
                 similarityIndex = artistSimilarity + titleSimilarity
                 similarityIndex = similarityIndex / 2
                 if(similarityIndex > 93 ):
-                    self.duplicateIndices.append({'uncheckedSongIndex': self.songList.index(uncheckedSong), 'originalSongIndex': index})
-                    duplicate = True
+                    if not self.isRemix(uncheckedSong.title, song.title):
+                        self.duplicateIndices.append({'uncheckedSongIndex': self.songList.index(uncheckedSong), 'originalSongIndex': index})
+                        duplicate = True
             if not duplicate:
-                    self.checkedSongList.append(uncheckedSong)
+                self.checkedSongList.append(uncheckedSong)
+
+    def isRemix(self, uncheckedSongTitle: str, songTitle: str):
+        isRemix = False
+        remixDenoters = ['remix', 'acoustic', 'instrumental']
+        for denoter in remixDenoters:
+            if denoter in uncheckedSongTitle.lower():
+                isRemix = True
+            elif denoter in songTitle.lower():
+                isRemix = True
+        return isRemix
 
     def isDuplicateSerialiaztionHandler(self, serializedSong):
         uncheckedSong = pickle.Unpickler(serializedSong)
@@ -51,11 +62,11 @@ class duplicateManager:
         for indices in self.duplicateIndices:
             originalSong = self.checkedSongList[indices['originalSongIndex']]
             duplicateSong = self.songList[indices['uncheckedSongIndex']]
-            if(originalSong.bitrate != 320 and originalSong.bitrate < duplicateSong.bitrate ):
+            if(originalSong.bitrate != 320 and originalSong.bitrate < duplicateSong.bitrate):
                 self.duplicateSongList.append(originalSong)
                 self.removeList.append(indices['originalSongIndex'])
             else:
-                self.duplicateSongList.append(duplicateSong)                
+                self.duplicateSongList.append(duplicateSong)
         self.removeList.sort(reverse=True)
         for item in self.removeList:
             del self.checkedSongList[item]
@@ -64,9 +75,10 @@ class duplicateManager:
     def sortDuplicates(self):
         for duplicate in self.duplicateSongList:
             try:
-                shutil.move(duplicate.path, self.duplicatesDir)           
+                shutil.copy2(duplicate.path, self.duplicatesDir)
+                os.remove(duplicate.path)
             except:
-                print('Error handling: ' + duplicate.path)    
+                print('Error handling: ' + duplicate.path)
 
     def skipDuplicateChecking(self):
         self.checkedSongList = self.songList
