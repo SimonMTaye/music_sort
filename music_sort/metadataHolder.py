@@ -2,7 +2,7 @@
 from dataclasses import dataclass
 
 
-@dataclass
+@dataclass(init=False)
 class metadataHolder:
     title: str
     album: str
