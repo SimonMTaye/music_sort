@@ -30,7 +30,7 @@ class pathSorter:
             title = str(self.selectedSong.title)
             fileName = str(title + self.selectedSong.extension)
             fileName = self.legalizePathName(fileName)
-            self.newDir = os.path.join(self.newDir, title)
+            self.newDir = os.path.join(self.newDir, fileName)
             self.newDir = os.path.normpath(self.newDir)
         else:
             fileName = str(self.selectedSong.name)
