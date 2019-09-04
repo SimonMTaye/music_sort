@@ -14,7 +14,7 @@ def scanFolder(dir: str, wantedFileTypes: list):
 def scanFolderRecursively(dir: str, wantedFileTypes: list):
     try:
         stuffInDir = os.scandir(dir)
-    except (FileNotFoundError, NotADirectoryError) as e:
+    except NotADirectoryError as e:
         stuffInDir = []
         print(e)
         pass
