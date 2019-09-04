@@ -1,9 +1,12 @@
-import shutil, os
-import multiprocessing, pickle
+import shutil
+import os
+import multiprocessing
+import pickle
 from fuzzywuzzy import fuzz
 
-## If audio fingerprinting is ever implemented, use that for comparisons
-## TODO fix multiprocessing implementation
+
+# If audio fingerprinting is ever implemented, use that for comparisons
+# TODO: fix multiprocessing implementation
 class duplicateManager:
 
     def __init__(self, songList, currentDir, useMultiProcessing):
@@ -26,20 +29,22 @@ class duplicateManager:
             serializedSongList = pool.map(pickle.dumps, self.songList)
             pool.map(self.isDuplicateSerialiaztionHandler, serializedSongList)
 
-
     def isDuplicate(self, uncheckedSong):
         duplicate = False
         if len(self.checkedSongList) == 0:
             self.checkedSongList.append(uncheckedSong)
         else:
             for index, song in enumerate(self.checkedSongList):
-                titleSimilarity = fuzz.token_set_ratio(uncheckedSong.title, song.title)
-                artistSimilarity = fuzz.token_set_ratio(uncheckedSong.artist, song.artist)
+                titleSimilarity = fuzz.token_set_ratio(
+                    uncheckedSong.title, song.title)
+                artistSimilarity = fuzz.token_set_ratio(
+                    uncheckedSong.artist, song.artist)
                 similarityIndex = artistSimilarity + titleSimilarity
                 similarityIndex = similarityIndex / 2
-                if(similarityIndex > 93 ):
+                if(similarityIndex > 93):
                     if not self.isRemix(uncheckedSong.title, song.title):
-                        self.duplicateIndices.append({'uncheckedSongIndex': self.songList.index(uncheckedSong), 'originalSongIndex': index})
+                        self.duplicateIndices.append({'uncheckedSongIndex': self.songList.index(
+                            uncheckedSong), 'originalSongIndex': index})
                         duplicate = True
             if not duplicate:
                 self.checkedSongList.append(uncheckedSong)
@@ -55,10 +60,11 @@ class duplicateManager:
         return isRemix
 
     def isDuplicateSerialiaztionHandler(self, serializedSong):
-        uncheckedSong = pickle.Unpickler(serializedSong)
+        uncheckedSong = pickle.loads(serializedSong)
+        print(uncheckedSong)
         self.isDuplicate(uncheckedSong)
 
-    def handleDuplicates (self):
+    def handleDuplicates(self):
         for indices in self.duplicateIndices:
             originalSong = self.checkedSongList[indices['originalSongIndex']]
             duplicateSong = self.songList[indices['uncheckedSongIndex']]
@@ -77,8 +83,9 @@ class duplicateManager:
             try:
                 shutil.copy2(duplicate.path, self.duplicatesDir)
                 os.remove(duplicate.path)
-            except:
+            except Exception as e:
                 print('Error handling: ' + duplicate.path)
+                print(e)
 
     def skipDuplicateChecking(self):
         self.checkedSongList = self.songList
