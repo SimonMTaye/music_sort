@@ -9,11 +9,12 @@ import fileScanner
 # TODO:  add multiprocessing
 
 
-def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicate=True, useMultiProcessing=False):
+def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
+    useMultiProcessing = False
     for property in sortingProperties:
-        if property not in ['artist', 'genre', 'album', 'bitrate', 'albumartist']:
+        if property not in ['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year']:
             raise ValueError(
-                'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate" or "albumartist"')
+                'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"')
     for type in musicFileTypes:
         if type not in ['mp3', 'm4a', 'flac', 'ogg', 'wav']:
             raise ValueError(
@@ -34,7 +35,7 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
     print("Parsing songs took: " + str(end - start))
     duplicateMan = duplicateManager.duplicateManager(
         parsedSongs, dir, useMultiProcessing)
-    if(checkForDuplicate):
+    if(checkForDuplicates):
         start = time.time()
         duplicateMan.checkForDuplicates()
         end = time.time()
