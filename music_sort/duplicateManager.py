@@ -9,25 +9,20 @@ from fuzzywuzzy import fuzz
 # TODO: fix multiprocessing implementation
 class duplicateManager:
 
-    def __init__(self, songList, currentDir, useMultiProcessing):
+    def __init__(self, songList, currentDir):
         self.songList = songList
         self.checkedSongList = []
         self.duplicateSongList = []
         self.currentDir = currentDir
         self.duplicateIndices = []
         self.removeList = []
-        self.usingMultiProcessing = useMultiProcessing
         self.duplicatesDir = os.path.join(currentDir, 'duplicates')
         os.makedirs(self.duplicatesDir, exist_ok=True)
 
     def checkForDuplicates(self):
-        if not self.usingMultiProcessing:
-            for uncheckedSong in self.songList:
-                self.isDuplicate(uncheckedSong)
-        elif self.usingMultiProcessing:
-            pool = multiprocessing.Pool(multiprocessing.cpu_count())
-            serializedSongList = pool.map(pickle.dumps, self.songList)
-            pool.map(self.isDuplicateSerialiaztionHandler, serializedSongList)
+        for uncheckedSong in self.songList:
+            self.isDuplicate(uncheckedSong)
+       
 
     def isDuplicate(self, uncheckedSong):
         duplicate = False
@@ -58,11 +53,6 @@ class duplicateManager:
             elif denoter in songTitle.lower():
                 isRemix = True
         return isRemix
-
-    def isDuplicateSerialiaztionHandler(self, serializedSong):
-        uncheckedSong = pickle.loads(serializedSong)
-        print(uncheckedSong)
-        self.isDuplicate(uncheckedSong)
 
     def handleDuplicates(self):
         for indices in self.duplicateIndices:

@@ -10,7 +10,6 @@ import fileScanner
 
 
 def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
-    useMultiProcessing = False
     for property in sortingProperties:
         if property not in ['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year']:
             raise ValueError(
@@ -34,7 +33,7 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
     end = time.time()
     print("Parsing songs took: " + str(end - start))
     duplicateMan = duplicateManager.duplicateManager(
-        parsedSongs, dir, useMultiProcessing)
+        parsedSongs, dir)
     if(checkForDuplicates):
         start = time.time()
         duplicateMan.checkForDuplicates()
