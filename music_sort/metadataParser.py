@@ -2,6 +2,12 @@ from tinytag import TinyTag
 from os import path
 from metadataHolder import metadataHolder
 
+def parseSongArray(songArray):
+    parsedSongs = []
+    for song in songArray:
+        metadata = parseSong(song)
+        parsedSongs.append(metadata)
+    return parsedSongs
 
 def parseSong(songPath: str):
     songInfo = TinyTag.get(songPath)
@@ -20,8 +26,6 @@ def parseSong(songPath: str):
     cleanMetadata(metadata)
     return metadata
 
-
-# TODO: check issue with bitrate cleaning
 def cleanMetadata(metadata):
     criticalProperties = ['title', 'album',
                           'albumartist', 'artist', 'genre', 'track', 'year']
