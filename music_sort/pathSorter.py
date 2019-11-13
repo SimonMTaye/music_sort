@@ -4,45 +4,46 @@ import shutil
 
 class pathSorter:
 
-    def __init__(self, sortUsing: tuple, songMetadata, initialDir, useTrackTitle):
+    def __init__(self, sortUsing: tuple, songMetadataList, initialDir, useTrackTitle):
         self.chosenAttributes = sortUsing
         for attribute in self.chosenAttributes:
-            if(attribute not in ['album', 'artist', 'genre', 'bitrate', 'albumartist']):
+            if(attribute not in __main__.PROPERTIES_TUPLE:
                 raise ValueError(
                     "Argument chosen is incorrect or not supported")
-        self.selectedSong = songMetadata
-        self.newDir = 'Sorted'
-        for property in self.chosenAttributes:
-            attributeValue = str(getattr(self.selectedSong, property))
-            attributeValue = self.legalizePathName(attributeValue)
-            self.newDir = os.path.join(self.newDir, attributeValue)
-        self.newDir = os.path.normpath(self.newDir)
-        self.newDir = os.path.join(initialDir, self.newDir)
-        try:
-            os.makedirs(self.newDir, exist_ok=True)
-        except Exception as e:
-            self.newDir = os.path.join(initialDir, 'Sorted', 'Unknown')
-            os.makedirs(self.newDir, exist_ok=True)
-            print("Error creating directory for: " + self.selectedSong.path)
-            print(e)
-            pass
-        if(useTrackTitle):
-            title = str(self.selectedSong.title)
-            fileName = str(title + self.selectedSong.extension)
-            fileName = self.legalizePathName(fileName)
-            self.newDir = os.path.join(self.newDir, fileName)
+        for songMetadata in songMetadataList:
+            self.selectedSong = songMetadata
+            self.newDir = 'Sorted'
+            for property in self.chosenAttributes:
+                attributeValue = str(getattr(self.selectedSong, property))
+                attributeValue = self.legalizePathName(attributeValue)
+                self.newDir = os.path.join(self.newDir, attributeValue)
             self.newDir = os.path.normpath(self.newDir)
-        else:
-            fileName = str(self.selectedSong.name)
-            fileName = self.legalizePathName(fileName)
-            self.newDir = os.path.join(self.newDir, fileName)
-            self.newDir = os.path.normpath(self.newDir)
-        try:
-            shutil.move(self.selectedSong.path, self.newDir)
-        except OSError as e:
-            print("Error sorting: " + self.selectedSong.path)
-            print(e)
-            pass
+            self.newDir = os.path.join(initialDir, self.newDir)
+            try:
+                os.makedirs(self.newDir, exist_ok=True)
+            except Exception as e:
+                self.newDir = os.path.join(initialDir, 'Sorted', 'Unknown')
+                os.makedirs(self.newDir, exist_ok=True)
+                print("Error creating directory for: " + self.selectedSong.path)
+                print(e)
+                pass
+            if(useTrackTitle):
+                title = str(self.selectedSong.title)
+                fileName = str(title + self.selectedSong.extension)
+                fileName = self.legalizePathName(fileName)
+                self.newDir = os.path.join(self.newDir, fileName)
+                self.newDir = os.path.normpath(self.newDir)
+            else:
+                fileName = str(self.selectedSong.name)
+                fileName = self.legalizePathName(fileName)
+                self.newDir = os.path.join(self.newDir, fileName)
+                self.newDir = os.path.normpath(self.newDir)
+            try:
+                shutil.move(self.selectedSong.path, self.newDir)
+            except OSError as e:
+                print("Error sorting: " + self.selectedSong.path)
+                print(e)
+                pass
 
     def legalizePathName(self, pathName: str):
         forbiddenCharacterList = [':', '*', '?', '"', '>', '<', '|', '/']
