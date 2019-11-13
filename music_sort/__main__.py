@@ -8,16 +8,13 @@ import fileScanner
 
 # TODO:  add multiprocessing
 
+PROPERTIES_TUPLE = tuple('artist', 'genre', 'album', 'bitrate', 'albumartist', 'year')
+SUPPORTED_FILE_TYPES = tuple('mp3', 'm4a', 'flac', 'ogg', 'wav')
 
 def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
-    for property in sortingProperties:
-        if property not in ['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year']:
-            raise ValueError(
-                'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"')
-    for type in musicFileTypes:
-        if type not in ['mp3', 'm4a', 'flac', 'ogg', 'wav']:
-            raise ValueError(
-                'Unsupported music file type. Use: mp3, m4a, flac, ogg or wav')
+    ## Verify that given parameters are appropirate, raise ValueError if not
+    verifySortingProperties(sortingProperties)
+    verifyFileTypes(musicFileTypes)
     if recursive:
         start = time.time()
         scannedFiles = fileScanner.scanFolderRecursively(dir, musicFileTypes)
@@ -25,30 +22,35 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
         print("File scanning took: " + str(end - start))
     elif not recursive:
         scannedFiles = fileScanner.scanFolder(dir, musicFileTypes)
-    parsedSongs = []
     start = time.time()
-    for file in scannedFiles:
-        metadata = metadataParser.parseSong(file)
-        parsedSongs.append(metadata)
+    metadataParser.parseSongArray(scannedFiles)
     end = time.time()
     print("Parsing songs took: " + str(end - start))
     duplicateMan = duplicateManager.duplicateManager(
         parsedSongs, dir)
     if(checkForDuplicates):
         start = time.time()
-        duplicateMan.checkForDuplicates()
+        parsedSongs = duplicateMan.checkForDuplicates()
         end = time.time()
         print("Duplicate sorting took: " + str(end - start))
-    else:
-        duplicateMan.skipDuplicateChecking()
-    duplicateMan.handleDuplicates()
-    parsedSongs = duplicateMan.checkedSongList
     start = time.time()
-    for song in parsedSongs:
-        pathSorter.pathSorter(sortingProperties, song, dir, useTrackTitle)
+    pathSorter.pathSorter(sortingProperties, parsedSongs, dir, useTrackTitle)
     end = time.time()
     print("Moving songs took: " + str(end - start))
 
+
+def verifySortingProperties(userProperties):
+    for property in userProperties:
+        if property not in PROPERTIES_TUPLE:
+            raise ValueError(
+                'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"'
+                )
+def verifyFileTypes(userFileTypes):
+    for type in userFileTypes:
+        if type not in SUPPORTED_FILE_TYPES:
+            raise ValueError(
+                'Unsupported music file type. Use: mp3, m4a, flac, ogg or wav'
+                )
 
 if __name__ == '__main__':
     fire.Fire(sortMusic)
