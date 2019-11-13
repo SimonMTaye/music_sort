@@ -22,7 +22,10 @@ class duplicateManager:
     def checkForDuplicates(self):
         for uncheckedSong in self.songList:
             self.isDuplicate(uncheckedSong)
-       
+        self.handleDuplicates()
+        self.sortDuplicates()
+        return self.checkedSongList
+
 
     def isDuplicate(self, uncheckedSong):
         duplicate = False
@@ -66,7 +69,6 @@ class duplicateManager:
         self.removeList.sort(reverse=True)
         for item in self.removeList:
             del self.checkedSongList[item]
-        self.sortDuplicates()
 
     def sortDuplicates(self):
         for duplicate in self.duplicateSongList:
@@ -76,6 +78,3 @@ class duplicateManager:
             except Exception as e:
                 print('Error handling: ' + duplicate.path)
                 print(e)
-
-    def skipDuplicateChecking(self):
-        self.checkedSongList = self.songList
