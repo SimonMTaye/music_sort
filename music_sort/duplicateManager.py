@@ -7,7 +7,7 @@ from fuzzywuzzy import fuzz
 
 # If audio fingerprinting is ever implemented, use that for comparisons
 # TODO: fix multiprocessing implementation
-class duplicateManager:
+class DuplicateManager:
 
     def __init__(self, songList, currentDir):
         self.songList = songList

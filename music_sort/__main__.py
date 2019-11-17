@@ -3,15 +3,16 @@ import time
 
 import duplicateManager
 import metadataParser
-import pathSorter
 import fileScanner
+import pathSorter
+
 
 # TODO:  add multiprocessing
 
-PROPERTIES_TUPLE = tuple('artist', 'genre', 'album', 'bitrate', 'albumartist', 'year')
-SUPPORTED_FILE_TYPES = tuple('mp3', 'm4a', 'flac', 'ogg', 'wav')
+PROPERTIES_TUPLE = tuple(['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year'])
+SUPPORTED_FILE_TYPES = tuple(['mp3', 'm4a', 'flac', 'ogg', 'wav'])
 
-def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
+def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
     ## Verify that given parameters are appropirate, raise ValueError if not
     verifySortingProperties(sortingProperties)
     verifyFileTypes(musicFileTypes)
@@ -23,10 +24,10 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
     elif not recursive:
         scannedFiles = fileScanner.scanFolder(dir, musicFileTypes)
     start = time.time()
-    metadataParser.parseSongArray(scannedFiles)
+    parsedSongs = metadataParser.parseSongArray(scannedFiles)
     end = time.time()
     print("Parsing songs took: " + str(end - start))
-    duplicateMan = duplicateManager.duplicateManager(
+    duplicateMan = duplicateManager.DuplicateManager(
         parsedSongs, dir)
     if(checkForDuplicates):
         start = time.time()
@@ -34,7 +35,8 @@ def sortMusic(dir=r'C:\Users\smtsi\Code\Test', recursive=True, sortingProperties
         end = time.time()
         print("Duplicate sorting took: " + str(end - start))
     start = time.time()
-    pathSorter.pathSorter(sortingProperties, parsedSongs, dir, useTrackTitle)
+    pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
+    pathMan.sortSongs(parsedSongs)
     end = time.time()
     print("Moving songs took: " + str(end - start))
 

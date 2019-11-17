@@ -2,9 +2,9 @@ import os
 import shutil
 
 from .__main__ import PROPERTIES_TUPLE
-from .Errors import IllegalFileNameError
+from .errors import IllegalFileNameError
 
-class pathSorter:
+class PathSorter:
 
     def __init__(self, sortUsing: tuple, initialDir: str, useTrackTitle: bool):
         self.chosenAttributes = sortUsing

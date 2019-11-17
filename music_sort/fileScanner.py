@@ -2,7 +2,6 @@ import os
 
 wantedFiles = []
 
-
 def scanFolder(dir: str, wantedFileTypes: list):
     filesInDir = os.scandir(dir)
     for file in filesInDir:
@@ -28,6 +27,6 @@ def scanFolderRecursively(dir: str, wantedFileTypes: list):
 
 def correctFileType(fileName: str, wantedFileTypes: list):
     for fileType in wantedFileTypes:
-        if(fileName.endswith(fileType)):
+        if fileName.endswith(fileType):
             return True
     return False

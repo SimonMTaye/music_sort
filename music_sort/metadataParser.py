@@ -1,6 +1,7 @@
 from tinytag import TinyTag
 from os import path
-from metadataHolder import metadataHolder
+
+from . import metadataHolder
 
 def parseSongArray(songArray):
     parsedSongs = []
@@ -11,7 +12,7 @@ def parseSongArray(songArray):
 
 def parseSong(songPath: str):
     songInfo = TinyTag.get(songPath)
-    metadata = metadataHolder()
+    metadata = metadataHolder.MetadataHolder()
     metadata.title = songInfo.title
     metadata.album = songInfo.album
     metadata.albumartist = songInfo.albumartist
