@@ -1,0 +1,2 @@
+class IllegalFileNameError (Exception):
+    pass
