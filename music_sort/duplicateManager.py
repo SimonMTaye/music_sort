@@ -30,10 +30,11 @@ class DuplicateManager:
         filteredList = []
         duplicateList = []
         for uncheckedSong in songList:
-            duplicateIndex = self.isDuplicate(uncheckedSong, filteredList)
             if filteredList.__len__ == 0:
                 filteredList.append(uncheckedSong)
-            elif duplicateIndex == self.NOT_DUPLICATE:
+                continue
+            duplicateIndex = self.isDuplicate(uncheckedSong, filteredList)
+            if duplicateIndex == self.NOT_DUPLICATE:
                 filteredList.append(uncheckedSong)
             elif not duplicateIndex == self.NOT_DUPLICATE:
                 duplicateSong = songList[duplicateIndex]
