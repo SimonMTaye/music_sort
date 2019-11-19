@@ -1,7 +1,7 @@
 from tinytag import TinyTag
 from os import path
 
-from . import metadataHolder
+import metadataHolder
 
 def parseSongArray(songArray):
     parsedSongs = []

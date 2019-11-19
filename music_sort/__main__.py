@@ -27,8 +27,8 @@ def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTra
     parsedSongs = metadataParser.parseSongArray(scannedFiles)
     end = time.time()
     print("Parsing songs took: " + str(end - start))
-    duplicateMan = duplicateManager.DuplicateManager(
-        parsedSongs, dir)
+    duplicateMan = duplicateManager.DuplicateManager(parsedSongs, dir)
+    duplicateMan.handleDuplicates()
     if(checkForDuplicates):
         start = time.time()
         parsedSongs = duplicateMan.checkForDuplicates()

@@ -1,8 +1,8 @@
 import os
 import shutil
 
-from .__main__ import PROPERTIES_TUPLE
-from .errors import IllegalFileNameError
+import __main__
+import errors
 
 class PathSorter:
 
@@ -21,7 +21,7 @@ class PathSorter:
 
     def verifySortingArguments(self, sortingAttributes):
         for attribute in sortingAttributes:
-            if attribute not in PROPERTIES_TUPLE:
+            if attribute not in __main__.PROPERTIES_TUPLE:
                 raise ValueError(
                     "Argument chosen is incorrect or not supported")
 
@@ -58,7 +58,7 @@ class PathSorter:
         nameWithoutExt = os.path.splitext(pathName)[0]
         ext = os.path.splitext(pathName)[1]
         if nameWithoutExt in forbiddenNameList:
-            raise IllegalFileNameError('Illegal file name: ' + pathName)
+            raise errors.IllegalFileNameError('Illegal file name: ' + pathName)
         if nameWithoutExt.endswith('.'):
             pathName = nameWithoutExt.strip('.') + ext
         elif ext == '.':
