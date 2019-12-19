@@ -1,14 +1,17 @@
 from tinytag import TinyTag
 from os import path
 
-import metadataHolder
+from . import metadataHolder
+
+DEFAULT_ATTRIBUTE_VALUE = 'Unknown'
+DEFAULT_BITRATE_VALUE = float(0.00)
 
 def parseSongArray(songArray):
     parsedSongs = []
     for song in songArray:
         metadata = parseSong(song)
         parsedSongs.append(metadata)
-    return parsedSongs
+    return tuple(parsedSongs)
 
 def parseSong(songPath: str):
     songInfo = TinyTag.get(songPath)
@@ -31,7 +34,7 @@ def cleanMetadata(metadata):
     criticalProperties = ['title', 'album',
                           'albumartist', 'artist', 'genre', 'track', 'year']
     for property in criticalProperties:
-        if type(getattr(metadata, property, 'Unknown')) != str:
-            setattr(metadata, property, 'Unknown')
-    if type(getattr(metadata, 'bitrate')) != float:
-        setattr(metadata, 'bitrate', 'Unknown')
+        if type(getattr(metadata, property, DEFAULT_ATTRIBUTE_VALUE)) != str:
+            setattr(metadata, property, DEFAULT_ATTRIBUTE_VALUE)
+    if type(getattr(metadata, 'bitrate', DEFAULT_ATTRIBUTE_VALUE)) != float:
+        setattr(metadata, 'bitrate', DEFAULT_BITRATE_VALUE)
