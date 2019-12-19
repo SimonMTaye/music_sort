@@ -1,8 +1,8 @@
 import os
 import shutil
 
-import __main__
-import errors
+from . import __main__
+from . import errors
 
 class PathSorter:
 
@@ -10,9 +10,15 @@ class PathSorter:
         self.chosenAttributes = sortUsing
         self.initialDir = initialDir
         self.useTrackTitle = useTrackTitle
-        self.verifySortingArguments(self.chosenAttributes)
+
+    def setSortingArguments(self, sortingArguments: tuple):
+        self.chosenAttributes = sortingArguments
+    
+    def setUseTrackTitle(self, useTrackTitle: bool):
+        self.useTrackTitle = useTrackTitle
 
     def sortSongs(self, songMetadataList):
+        self.verifySortingArguments(self.chosenAttributes)
         for songMetadata in songMetadataList:
             newDir = self.parseDir(songMetadata, self.chosenAttributes)
             self.createDir(newDir, songMetadata)
@@ -58,7 +64,7 @@ class PathSorter:
         nameWithoutExt = os.path.splitext(pathName)[0]
         ext = os.path.splitext(pathName)[1]
         if nameWithoutExt in forbiddenNameList:
-            raise errors.IllegalFileNameError('Illegal file name: ' + pathName)
+            raise errors.IllegalFileNameError()
         if nameWithoutExt.endswith('.'):
             pathName = nameWithoutExt.strip('.') + ext
         elif ext == '.':
