@@ -6,7 +6,7 @@ from . import metadataHolder
 DEFAULT_ATTRIBUTE_VALUE = 'Unknown'
 DEFAULT_BITRATE_VALUE = float(0.00)
 
-def parseSongArray(songArray):
+def parseSongArray(songArray: list):
     parsedSongs = []
     for song in songArray:
         metadata = parseSong(song)
