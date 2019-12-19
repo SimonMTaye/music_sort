@@ -4,62 +4,72 @@ import multiprocessing
 import pickle
 from fuzzywuzzy import fuzz
 
-from metadataHolder import MetadataHolder
+from .metadataHolder import MetadataHolder
 
 
-# If audio fingerprinting is ever implemented, use that for comparisons
 # TODO: fix multiprocessing implementation
 class DuplicateManager:
 
-    def __init__(self, songList: list, currentDir: str):
-        self.songList = songList
-        self.currentDir = currentDir
-        self.NOT_DUPLICATE = -1
-        self.FIRST_SONG = 100
-        self.SECOND_SONG = 200        
+    DUPLICATE_THRESHOLD = 93
+    NOT_DUPLICATE = -1
+    FIRST_SONG = 100
+    SECOND_SONG = 200  
+
+    def __init__(self, songTuple: tuple, currentDir: str):
+        self.songTuple = songTuple
+        self.currentDir = currentDir              
         self.duplicatesDir = os.path.join(currentDir, 'duplicates')
 
+    # Wrapper function. Runs the filterDuplicate function and stores the resulting duplicate and filtered lists 
+    # Runs moveDuplicate on the duplicate list and returns the filtered list
     def handleDuplicates(self):
-        sortedSongListDict = self.filterDuplicates(self.songList)
+        sortedSongListDict = self.filterDuplicates(self.songTuple)
         checkedList = sortedSongListDict['filteredList']
         duplicateList = sortedSongListDict['duplicateList']
         self.moveDuplicates(duplicateList, self.duplicatesDir)
         return checkedList
 
-    def filterDuplicates(self, songList: list):
+    # Travereses through a list and identifies duplicate songs. Pass a dict object containing a clean list and a duplicate list
+    def filterDuplicates(self, songList: tuple):
         filteredList = []
         duplicateList = []
         for uncheckedSong in songList:
             if filteredList.__len__ == 0:
                 filteredList.append(uncheckedSong)
                 continue
-            duplicateIndex = self.isDuplicate(uncheckedSong, filteredList)
-            if duplicateIndex == self.NOT_DUPLICATE:
-                filteredList.append(uncheckedSong)
-            elif not duplicateIndex == self.NOT_DUPLICATE:
-                duplicateSong = songList[duplicateIndex]
-                if self.pickBetterQuality(uncheckedSong, duplicateSong) == self.FIRST_SONG:
-                    filteredList.append(uncheckedSong)
-                    duplicateList.append(duplicateSong)
-                elif self.pickBetterQuality(uncheckedSong, duplicateSong) == self.SECOND_SONG:
-                    filteredList.append(duplicateSong)
-                    duplicateList.append(uncheckedSong)
+            for checkedSongIndex, checkedSong in enumerate(filteredList):
+                if not self.isDuplicate(uncheckedSong, checkedSong):
+                    isLastSongInFilteredList = checkedSongIndex == (filteredList.__len__ )- 1
+                    if isLastSongInFilteredList:
+                        filteredList.append(uncheckedSong)
+                    continue
+                else:
+                    if self.pickBetterQuality(uncheckedSong, checkedSong) == self.FIRST_SONG:
+                        del filteredList[checkedSongIndex]
+                        filteredList.append(uncheckedSong)
+                        duplicateList.append(checkedSong)
+                    elif self.pickBetterQuality(uncheckedSong, checkedSong) == self.SECOND_SONG:
+                        duplicateList.append(uncheckedSong)
+                    break
         sortedSongListsDict = {"filteredList" : filteredList, "duplicateList" : duplicateList}             
         return sortedSongListsDict
 
-    def isDuplicate(self, uncheckedSong: MetadataHolder, songList: list):
-        for index, song in enumerate(songList):
-            titleSimilarity = fuzz.token_set_ratio(
-                uncheckedSong.title, song.title)
-            artistSimilarity = fuzz.token_set_ratio(
-                uncheckedSong.artist, song.artist)
-            similarityIndex = artistSimilarity + titleSimilarity
-            similarityIndex = similarityIndex / 2
-            if(similarityIndex > 93):
-                if not self.isRemix(uncheckedSong.title, song.title):
-                    return index
-        return self.NOT_DUPLICATE
-           
+    # Gets the similarity of the title and artist of two songs and determines if they are duplicates
+    # They are identified as duplicates if the similarity is above the threshold
+    def isDuplicate(self, uncheckedSong: MetadataHolder, song: MetadataHolder):
+        titleSimilarity = self.getSimilarityRating(uncheckedSong.title, song.title)
+        artistSimilarity = self.getSimilarityRating(uncheckedSong.artist, song.title)
+        similarityIndex = (artistSimilarity + titleSimilarity) / 2
+        if(similarityIndex > self.DUPLICATE_THRESHOLD):
+            if not self.isRemix(uncheckedSong.title, song.title):
+                return True
+        return False
+
+    # Does a fuzzy string comparision
+    def getSimilarityRating(self, firstString: str, secondString: str):
+        return fuzz.token_set_ratio(firstString, secondString)
+
+    # Checks if the song is remix       
     def isRemix(self, firstSongTitle: str, secondSongTitle: str):
         remixDenoters = ['remix', 'acoustic', 'instrumental']
         for denoter in remixDenoters:
@@ -67,12 +77,14 @@ class DuplicateManager:
                 return True
         return False
 
+    # Returns song with higher bitrate. If they have the same bitrate, returns the first song
     def pickBetterQuality(self, firstSong: MetadataHolder, secondSong: MetadataHolder):
         if secondSong.bitrate > firstSong.bitrate:
             return self.SECOND_SONG
         else:
             return self.FIRST_SONG
-            
+
+    # Move songs in the duplicate list to the designated directory         
     def moveDuplicates(self, duplicateSongList: list, duplicatesDir: str):
         os.makedirs(duplicatesDir, exist_ok=True)
         for duplicate in duplicateSongList:

@@ -1,10 +1,10 @@
 import fire
 import time
 
-import duplicateManager
-import metadataParser
-import fileScanner
-import pathSorter
+from . import duplicateManager
+from . import metadataParser
+from . import fileScanner
+from . import pathSorter
 
 
 # TODO:  add multiprocessing
@@ -13,7 +13,7 @@ PROPERTIES_TUPLE = tuple(['artist', 'genre', 'album', 'bitrate', 'albumartist', 
 SUPPORTED_FILE_TYPES = tuple(['mp3', 'm4a', 'flac', 'ogg', 'wav'])
 
 def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
-    ## Verify that given parameters are appropirate, raise ValueError if not
+    # Verify that given parameters are appropirate, raise ValueError if not
     verifySortingProperties(sortingProperties)
     verifyFileTypes(musicFileTypes)
     if recursive:
@@ -31,12 +31,12 @@ def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTra
     duplicateMan.handleDuplicates()
     if(checkForDuplicates):
         start = time.time()
-        parsedSongs = duplicateMan.checkForDuplicates()
+        filteredSongs = duplicateMan.handleDuplicates()
         end = time.time()
         print("Duplicate sorting took: " + str(end - start))
     start = time.time()
     pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
-    pathMan.sortSongs(parsedSongs)
+    pathMan.sortSongs(filteredSongs)
     end = time.time()
     print("Moving songs took: " + str(end - start))
 
