@@ -15,18 +15,19 @@ def parseSongArray(songArray: list):
 
 def parseSong(songPath: str):
     songInfo = TinyTag.get(songPath)
-    metadata = metadataHolder.MetadataHolder()
-    metadata.title = songInfo.title
-    metadata.album = songInfo.album
-    metadata.albumartist = songInfo.albumartist
-    metadata.artist = songInfo.artist
-    metadata.genre = songInfo.genre
-    metadata.bitrate = songInfo.bitrate
-    metadata.track = songInfo.track
-    metadata.year = songInfo.year
-    metadata.path = songPath
-    metadata.name = path.basename(songPath)
-    metadata.extension = path.splitext(songPath)[1]
+    metadata = metadataHolder.MetadataHolder(
+    songInfo.title,
+    songInfo.album,
+    songInfo.albumartist,
+    songInfo.artist,
+    songInfo.genre,
+    songInfo.bitrate,
+    songInfo.track,
+    songInfo.year,
+    songPath,
+    path.basename(songPath),
+    path.splitext(songPath)[1]
+    )
     cleanMetadata(metadata)
     return metadata
 
