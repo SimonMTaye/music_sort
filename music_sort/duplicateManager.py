@@ -1,7 +1,5 @@
 import shutil
 import os
-import multiprocessing
-import pickle
 from fuzzywuzzy import fuzz
 
 from .metadataHolder import MetadataHolder
