@@ -10,7 +10,7 @@ from .metadataHolder import MetadataHolder
 # TODO: fix multiprocessing implementation
 class DuplicateManager:
 
-    DUPLICATE_THRESHOLD = 93
+    DUPLICATE_THRESHOLD = 95
     NOT_DUPLICATE = -1
     FIRST_SONG = 100
     SECOND_SONG = 200  
@@ -31,18 +31,33 @@ class DuplicateManager:
 
     # Travereses through a list and identifies duplicate songs. Pass a dict object containing a clean list and a duplicate list
     def filterDuplicates(self, songList: tuple):
+        """ Looks through a list of songs and removes duplicates
+
+        Looks through a list of songs and separtes the duplicates and filtered songs into separate lists.
+        Each song in the list received as a parameter is checked against the filteredList
+        If a duplicate is found, the one with higher bitrate is chosen. 
+        If the filtered list is empty (first song being checked), then the song is automatically added to the list.
+        
+        Args:
+            songList(list or tuple): the song list to be checked
+
+        Returns:
+            sortedSongListDict(dict): a dict containing two lists, the filteredList and the duplicateList
+        """
         filteredList = []
         duplicateList = []
-        for uncheckedSong in songList:
-            if filteredList.__len__ == 0:
+        print('Checking for duplicates')
+        for uncheckedSongIndex, uncheckedSong in enumerate(songList):
+            print('Checking song ' + str(uncheckedSongIndex + 1) + ' of ' + str(len(songList)), end='\r')
+            if len(filteredList) == 0:
                 filteredList.append(uncheckedSong)
                 continue
             for checkedSongIndex, checkedSong in enumerate(filteredList):
                 if not self.isDuplicate(uncheckedSong, checkedSong):
-                    isLastSongInFilteredList = checkedSongIndex == (filteredList.__len__ )- 1
+                    isLastSongInFilteredList = checkedSongIndex == len(filteredList)- 1
                     if isLastSongInFilteredList:
                         filteredList.append(uncheckedSong)
-                    continue
+                        break
                 else:
                     if self.pickBetterQuality(uncheckedSong, checkedSong) == self.FIRST_SONG:
                         del filteredList[checkedSongIndex]
@@ -56,12 +71,12 @@ class DuplicateManager:
 
     # Gets the similarity of the title and artist of two songs and determines if they are duplicates
     # They are identified as duplicates if the similarity is above the threshold
-    def isDuplicate(self, uncheckedSong: MetadataHolder, song: MetadataHolder):
-        titleSimilarity = self.getSimilarityRating(uncheckedSong.title, song.title)
-        artistSimilarity = self.getSimilarityRating(uncheckedSong.artist, song.title)
+    def isDuplicate(self, firstSong: MetadataHolder, secondSong: MetadataHolder):
+        titleSimilarity = self.getSimilarityRating(firstSong.title, secondSong.title)
+        artistSimilarity = self.getSimilarityRating(firstSong.artist, secondSong.artist)
         similarityIndex = (artistSimilarity + titleSimilarity) / 2
         if(similarityIndex > self.DUPLICATE_THRESHOLD):
-            if not self.isRemix(uncheckedSong.title, song.title):
+            if not self.isRemix(firstSong.title, secondSong.title):
                 return True
         return False
 

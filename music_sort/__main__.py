@@ -42,12 +42,14 @@ def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTra
 
 
 def verifySortingProperties(userProperties):
+    """ Verify that given sorting properties are appropirate, raise ValueError if not"""
     for property in userProperties:
         if property not in PROPERTIES_TUPLE:
             raise ValueError(
                 'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"'
                 )
 def verifyFileTypes(userFileTypes):
+    """ Verify that given file types are appropirate, raise ValueError if not"""
     for type in userFileTypes:
         if type not in SUPPORTED_FILE_TYPES:
             raise ValueError(
