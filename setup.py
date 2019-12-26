@@ -1,8 +1,22 @@
-from setuptools import setup, find_packages
-setup(
-    name='music_sort',
-    version='0.1',
-    packages=find_packages(),
-    description='Small Library for sorting music files',
-    install_requires=['tinytag', 'fuzzywuzzy']
-    )
+import setuptools
+
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
+setuptools.setup(
+    name="movie_sort", # Replace with your own username
+    version="0.6.1",
+    author="Simon Mulat",
+    author_email="mulat.simon@gmail.com",
+    description="Sort local audio files",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/SirPotato10000/music_sort",
+    packages=["music_sort"],
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
+    ],
+    python_requires='>=3.7.4',
+)
