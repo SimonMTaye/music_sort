@@ -12,7 +12,7 @@ from . import pathSorter
 PROPERTIES_TUPLE = tuple(['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year'])
 SUPPORTED_FILE_TYPES = tuple(['mp3', 'm4a', 'flac', 'ogg', 'wav'])
 
-def sortMusic(dir, recursive=True, sortingProperties=('artist', 'album'), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
+def sortMusic(dir, recursive=True, sortingProperties=tuple(['artist', 'album']), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
     # Verify that given parameters are appropirate, raise ValueError if not
     verifySortingProperties(sortingProperties)
     verifyFileTypes(musicFileTypes)
