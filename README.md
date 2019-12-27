@@ -3,7 +3,7 @@ Look through a directory for audio files and sort them using the specified prope
 
 ## Usage
 
-*python music_sort (dir) [-argument]
+*python music_sort (dir) [-argument]*
 
 Arguments
   + *dir* (**str**)   -   The root directory to be scanned for audio files
