@@ -1,7 +1,10 @@
-# movie_sort
+# music_sort
 Look through a directory for audio files and sort them using the specified properties (eg. /exampleArtist/exampleAlbum/exaplmeTrack.mp3) 
 
-### Usage
+## Usage
+
+*python music_sort (dir) [-argument]
+
 Arguments
   + *dir* (**str**)   -   The root directory to be scanned for audio files
   + *recursive* (**bool**)  -   Determines if the root directory should be recursively scanned (default = **True**)
@@ -11,7 +14,7 @@ Arguments
   + *checkForDuplicates* (**bool**) - Check for duplicate songs using fuzzy string comparison of track titles and artist (default = **True** )
     * Could consume time on large amount of music files. Is CPU intensive
   
-### Dependencies
+## Dependencies
   + *fuzzywuzzy* - used for fuzzy string matching
   + *Python Fire* - used for the CLI
   + *tinytag* - parse music file metadata
