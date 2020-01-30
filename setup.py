@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="movie_sort", # Replace with your own username
-    version="0.6.1",
+    version="0.6.2",
     author="Simon Mulat",
     author_email="mulat.simon@gmail.com",
     description="Sort local audio files",

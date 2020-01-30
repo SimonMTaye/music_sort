@@ -5,7 +5,7 @@ from fuzzywuzzy import fuzz
 from .metadataHolder import MetadataHolder
 
 
-# TODO: fix multiprocessing implementation
+# TODO: add multiprocessing implementation
 class DuplicateManager:
 
     DUPLICATE_THRESHOLD = 95
@@ -70,13 +70,16 @@ class DuplicateManager:
     # Gets the similarity of the title and artist of two songs and determines if they are duplicates
     # They are identified as duplicates if the similarity is above the threshold
     def isDuplicate(self, firstSong: MetadataHolder, secondSong: MetadataHolder):
+        if self.isRemix(firstSong.title, secondSong.title):
+            return False
         titleSimilarity = self.getSimilarityRating(firstSong.title, secondSong.title)
-        artistSimilarity = self.getSimilarityRating(firstSong.artist, secondSong.artist)
-        similarityIndex = (artistSimilarity + titleSimilarity) / 2
-        if(similarityIndex > self.DUPLICATE_THRESHOLD):
-            if not self.isRemix(firstSong.title, secondSong.title):
+        if titleSimilarity > 95:
+            artistSimilarity = self.getSimilarityRating(firstSong.artist, secondSong.artist)
+            similarityIndex = (artistSimilarity + titleSimilarity) / 2
+            if(similarityIndex > self.DUPLICATE_THRESHOLD):
                 return True
-        return False
+        else:
+            return False
 
     # Does a fuzzy string comparision
     def getSimilarityRating(self, firstString: str, secondString: str):
