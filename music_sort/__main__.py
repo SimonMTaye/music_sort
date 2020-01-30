@@ -24,21 +24,28 @@ def sortMusic(dir, recursive=True, sortingProperties=tuple(['artist', 'album']),
     elif not recursive:
         scannedFiles = fileScanner.scanFolder(dir, musicFileTypes)
     start = time.time()
-    parsedSongs = metadataParser.parseSongArray(scannedFiles)
+    parsedSongs = metadataParser.parseSongList(scannedFiles)
     end = time.time()
     print("Parsing songs took: " + str(end - start))
     duplicateMan = duplicateManager.DuplicateManager(parsedSongs, dir)
-    duplicateMan.handleDuplicates()
     if(checkForDuplicates):
         start = time.time()
-        filteredSongs = duplicateMan.handleDuplicates()
+        checkedSongs = duplicateMan.filterDuplicates(tuple(parsedSongs))
+        filteredSongs = checkedSongs['filteredList']
+        duplicateSongs = checkedSongs['duplicateList']        
         end = time.time()
         print("Duplicate sorting took: " + str(end - start))
-    start = time.time()
-    pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
-    pathMan.sortSongs(filteredSongs)
-    end = time.time()
-    print("Moving songs took: " + str(end - start))
+        start = time.time()
+        pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
+        pathMan.moveSongs(filteredSongs, duplicateSongs)
+        end = time.time()
+        print("Moving songs took: " + str(end - start))
+    else:
+        start = time.time()
+        pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
+        pathMan.moveSongs(parsedSongs, [])
+        end = time.time()
+        print("Moving songs took: " + str(end - start))
 
 
 def verifySortingProperties(userProperties):

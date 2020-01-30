@@ -18,15 +18,6 @@ class DuplicateManager:
         self.currentDir = currentDir              
         self.duplicatesDir = os.path.join(currentDir, 'duplicates')
 
-    # Wrapper function. Runs the filterDuplicate function and stores the resulting duplicate and filtered lists 
-    # Runs moveDuplicate on the duplicate list and returns the filtered list
-    def handleDuplicates(self):
-        sortedSongListDict = self.filterDuplicates(self.songTuple)
-        checkedList = sortedSongListDict['filteredList']
-        duplicateList = sortedSongListDict['duplicateList']
-        self.moveDuplicates(duplicateList, self.duplicatesDir)
-        return checkedList
-
     # Travereses through a list and identifies duplicate songs. Pass a dict object containing a clean list and a duplicate list
     def filterDuplicates(self, songList: tuple):
         """ Looks through a list of songs and removes duplicates
@@ -100,13 +91,3 @@ class DuplicateManager:
         else:
             return self.FIRST_SONG
 
-    # Move songs in the duplicate list to the designated directory         
-    def moveDuplicates(self, duplicateSongList: list, duplicatesDir: str):
-        os.makedirs(duplicatesDir, exist_ok=True)
-        for duplicate in duplicateSongList:
-            try:
-                shutil.copy2(duplicate.path, self.duplicatesDir)
-                os.remove(duplicate.path)
-            except Exception as e:
-                print('Error handling: ' + duplicate.path)
-                print(e)

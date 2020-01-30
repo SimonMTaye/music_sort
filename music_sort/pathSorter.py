@@ -11,19 +11,27 @@ class PathSorter:
         self.initialDir = initialDir
         self.useTrackTitle = useTrackTitle
 
-    def setSortingArguments(self, sortingArguments: tuple):
-        self.chosenAttributes = sortingArguments
-    
-    def setUseTrackTitle(self, useTrackTitle: bool):
-        self.useTrackTitle = useTrackTitle
-
-    def sortSongs(self, songMetadataList):
+    def moveSongs(self, filteredSongList, duplicateSongList):
         self.verifySortingArguments(self.chosenAttributes)
-        for songMetadata in songMetadataList:
-            newDir = self.parseDir(songMetadata, self.chosenAttributes)
-            self.createDir(newDir, songMetadata)
-            self.moveSong(songMetadata.path, newDir)
-            pass
+        for filteredSongMetadata in filteredSongList:
+            customDir = self.parseCustomDir(filteredSongMetadata)
+            newDir = os.path.join (self.initialDir, 'Sorted', customDir)
+            try:
+                os.makedirs(newDir)
+                shutil.move(filteredSongMetadata.path, newDir)
+            except OSError as e:
+                print("Error moving: " + filteredSongMetadata.path)
+                print(e)
+        for duplicateSongMetadata in duplicateSongList:
+            customDir = self.parseCustomDir(duplicateSongMetadata)
+            newDir = os.path.join (self.initialDir, 'Duplicates', customDir)
+            try:
+                os.makedirs(newDir)
+                shutil.copy2(duplicateSongMetadata.path, newDir)
+                os.remove(duplicateSongMetadata.path)
+            except Exception as e:
+                print('Error handling: ' + duplicateSongMetadata.path)
+                print(e)
 
     def verifySortingArguments(self, sortingAttributes):
         for attribute in sortingAttributes:
@@ -31,14 +39,13 @@ class PathSorter:
                 raise ValueError(
                     "Argument chosen is incorrect or not supported")
 
-    def parseDir(self, songMetadata, chosenAttributes):
-        songDirectory = 'Sorted'
-        for property in chosenAttributes:
+    def parseCustomDir(self, songMetadata):
+        songDirectory = ''
+        for property in self.chosenAttributes:
             attributeValue = str(getattr(songMetadata, property))
             attributeValue = self.legalizePathName(attributeValue)
             songDirectory = os.path.join(songDirectory, attributeValue)
         songDirectory = os.path.normpath(songDirectory)
-        songDirectory = os.path.join(self.initialDir, songDirectory)
         if(self.useTrackTitle):
             title = str(songMetadata.title)
             fileName = str(title + songMetadata.extension)
@@ -73,21 +80,11 @@ class PathSorter:
         verifiedPath = pathName
         return verifiedPath
 
-    def createDir(self, newDir, songMetadata):
-        try:
-            os.makedirs(newDir, exist_ok=True)
-        except Exception as e:
-            newDir = os.path.join(self.initialDir, 'Sorted', 'Unknown')
-            os.makedirs(newDir, exist_ok=True)
-            print("Error creating directory " + newDir)
-            print(e)
-            pass    
-
     def moveSong(self, songPath: str, newDir: str):
         try:
             shutil.move(songPath, newDir)
         except OSError as e:
-            print("Error sorting: " + songPath)
+            print("Error moving: " + songPath)
             print(e)
 
 
