@@ -12,12 +12,13 @@ from . import pathSorter
 PROPERTIES_TUPLE = tuple(['artist', 'genre', 'album', 'bitrate', 'albumartist', 'year'])
 SUPPORTED_FILE_TYPES = tuple(['mp3', 'm4a', 'flac', 'ogg', 'wav'])
 
-def sortMusic(dir, recursive=True, sortingProperties=tuple(['artist', 'album']), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
+def sortMusic(dir, recursive=True, sortingProperties=tuple(['albumartist', 'album']), useTrackTitle=False, musicFileTypes=['mp3', 'm4a', 'flac'], checkForDuplicates=True):
     # Verify that given parameters are appropirate, raise ValueError if not
     verifySortingProperties(sortingProperties)
     verifyFileTypes(musicFileTypes)
     if recursive:
         start = time.time()
+        print("Scanning Files...")
         scannedFiles = fileScanner.scanFolderRecursively(dir, musicFileTypes)
         end = time.time()
         print("File scanning took: " + str(end - start))
@@ -53,14 +54,14 @@ def verifySortingProperties(userProperties):
     for property in userProperties:
         if property not in PROPERTIES_TUPLE:
             raise ValueError(
-                'Unsupported value used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"'
+                'Unsupported value ' + property + ' used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"'
                 )
 def verifyFileTypes(userFileTypes):
     """ Verify that given file types are appropirate, raise ValueError if not"""
     for type in userFileTypes:
         if type not in SUPPORTED_FILE_TYPES:
             raise ValueError(
-                'Unsupported music file type. Use: mp3, m4a, flac, ogg or wav'
+                'Unsupported music file type ' + property + '. Use: mp3, m4a, flac, ogg or wav'
                 )
 
 if __name__ == '__main__':

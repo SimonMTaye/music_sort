@@ -13,21 +13,29 @@ class PathSorter:
 
     def moveSongs(self, filteredSongList, duplicateSongList):
         self.verifySortingArguments(self.chosenAttributes)
-        for filteredSongMetadata in filteredSongList:
+        for i, filteredSongMetadata in enumerate(filteredSongList):
+            print('Moving song ' + str(i + 1) + ' of ' + str(len(filteredSongList)), end='\r')
             customDir = self.parseCustomDir(filteredSongMetadata)
-            newDir = os.path.join (self.initialDir, 'Sorted', customDir)
+            targetDir = customDir['targetDir']
+            fileName = customDir['fileName']
+            destinationDir = os.path.join(self.initialDir, 'Sorted', targetDir)
+            destinationFilePath = os.path.join(destinationDir, fileName)
             try:
-                os.makedirs(newDir)
-                shutil.move(filteredSongMetadata.path, newDir)
+                os.makedirs(destinationDir, exist_ok=True)
+                shutil.move(filteredSongMetadata.path, destinationFilePath)
             except OSError as e:
                 print("Error moving: " + filteredSongMetadata.path)
                 print(e)
-        for duplicateSongMetadata in duplicateSongList:
+        for j, duplicateSongMetadata in enumerate(duplicateSongList):
+            print('Moving duplicate song ' + str(j + 1) + ' of ' + str(len(duplicateSongList)), end='\r')
             customDir = self.parseCustomDir(duplicateSongMetadata)
-            newDir = os.path.join (self.initialDir, 'Duplicates', customDir)
+            targetDir = customDir['targetDir']
+            fileName = customDir['fileName']
+            destinationDir = os.path.join(self.initialDir, 'Duplicates', targetDir)
+            destinationFilePath = os.path.join(destinationDir, fileName)
             try:
-                os.makedirs(newDir)
-                shutil.copy2(duplicateSongMetadata.path, newDir)
+                os.makedirs(destinationDir, exist_ok=True)
+                shutil.copy2(duplicateSongMetadata.path, destinationFilePath)
                 os.remove(duplicateSongMetadata.path)
             except Exception as e:
                 print('Error handling: ' + duplicateSongMetadata.path)
@@ -50,14 +58,10 @@ class PathSorter:
             title = str(songMetadata.title)
             fileName = str(title + songMetadata.extension)
             fileName = self.legalizePathName(fileName)
-            songDirectory = os.path.join(songDirectory, fileName)
-            songDirectory = os.path.normpath(songDirectory)
         else:
             fileName = str(songMetadata.name)
             fileName = self.legalizePathName(fileName)
-            songDirectory = os.path.join(songDirectory, fileName)
-            songDirectory = os.path.normpath(songDirectory)
-        return songDirectory        
+        return {'targetDir': songDirectory , 'fileName': fileName}
 
     def legalizePathName(self, pathName: str):
         forbiddenCharacterList = [':', '*', '?', '"', '>', '<', '|', '/']
