@@ -1,4 +1,4 @@
-from tinytag import TinyTag
+from tinytag import TinyTag, TinyTagException
 from os import path
 
 from . import metadataHolder
@@ -6,31 +6,35 @@ from . import metadataHolder
 DEFAULT_ATTRIBUTE_VALUE = 'Unknown'
 DEFAULT_BITRATE_VALUE = float(0.00)
 
-def parseSongList(songArray: list):
+def parseSongList(songList: list):
     parsedSongs = []
-    for song in songArray:
-        metadata = parseSong(song)
-        parsedSongs.append(metadata)
+    for i, song in enumerate(songList):
+        print('Parsing song ' + str(i + 1) + ' of ' + str(len(songList)), end='\r')
+        try:
+            metadata = parseSong(song)
+            parsedSongs.append(metadata)
+        except (PermissionError, TinyTagException) as e:
+            print(song)
+            print(e)
     return tuple(parsedSongs)
 
 def parseSong(songPath: str):
     songInfo = TinyTag.get(songPath)
     metadata = metadataHolder.MetadataHolder(
-    songInfo.title,
-    songInfo.album,
-    songInfo.albumartist,
-    songInfo.artist,
-    songInfo.genre,
-    songInfo.bitrate,
-    songInfo.track,
-    songInfo.year,
-    songPath,
-    path.basename(songPath),
-    path.splitext(songPath)[1]
+        songInfo.title,
+        songInfo.album,
+        songInfo.albumartist,
+        songInfo.artist,
+        songInfo.genre,
+        songInfo.bitrate,
+        songInfo.track,
+        songInfo.year,
+        songPath,
+        path.basename(songPath),
+        path.splitext(songPath)[1]
     )
     cleanMetadata(metadata)
     return metadata
-
 def cleanMetadata(metadata):
     criticalProperties = ['title', 'album',
                           'albumartist', 'artist', 'genre', 'track', 'year']

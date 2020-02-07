@@ -13,14 +13,13 @@ def scanFolder(dir: str, wantedFileTypes: list):
 def scanFolderRecursively(dir: str, wantedFileTypes: list):
     try:
         stuffInDir = os.scandir(dir)
-    except NotADirectoryError as e:
+    except NotADirectoryError:
         stuffInDir = []
-        print(e)
         pass
     for thing in stuffInDir:
-        if(thing.is_file and correctFileType(thing.name, wantedFileTypes)):
+        if(os.path.isfile(thing.path) and correctFileType(thing.name, wantedFileTypes)):
             wantedFiles.append(thing.path)
-        elif(thing.is_dir and thing.name != 'duplicates' and thing.name != 'Sorted'):
+        elif(os.path.isdir(thing.path) and thing.name != 'duplicates' and thing.name != 'Sorted'):
             scanFolderRecursively(thing.path, wantedFileTypes)
     return wantedFiles
 
