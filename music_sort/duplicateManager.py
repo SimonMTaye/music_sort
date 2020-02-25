@@ -11,12 +11,12 @@ class DuplicateManager:
     DUPLICATE_THRESHOLD = 95
     NOT_DUPLICATE = -1
     FIRST_SONG = 100
-    SECOND_SONG = 200  
+    SECOND_SONG = 200
 
     def __init__(self, songTuple: tuple, currentDir: str):
         self.songTuple = songTuple
-        self.currentDir = currentDir              
-        self.duplicatesDir = os.path.join(currentDir, 'duplicates')
+        self.currentDir = currentDir
+        self.duplicatesDir = os.path.join(currentDir, "duplicates")
 
     # Travereses through a list and identifies duplicate songs. Pass a dict object containing a clean list and a duplicate list
     def filterDuplicates(self, songList: tuple):
@@ -35,27 +35,42 @@ class DuplicateManager:
         """
         filteredList = []
         duplicateList = []
-        print('Checking for duplicates')
+        print("Checking for duplicates")
         for uncheckedSongIndex, uncheckedSong in enumerate(songList):
-            print('Checking song ' + str(uncheckedSongIndex + 1) + ' of ' + str(len(songList)), end='\r')
+            print(
+                "Checking song "
+                + str(uncheckedSongIndex + 1)
+                + " of "
+                + str(len(songList)),
+                end="\r",
+            )
             if len(filteredList) == 0:
                 filteredList.append(uncheckedSong)
                 continue
             for checkedSongIndex, checkedSong in enumerate(filteredList):
                 if not self.isDuplicate(uncheckedSong, checkedSong):
-                    isLastSongInFilteredList = checkedSongIndex == len(filteredList)- 1
+                    isLastSongInFilteredList = checkedSongIndex == len(filteredList) - 1
                     if isLastSongInFilteredList:
                         filteredList.append(uncheckedSong)
                         break
                 else:
-                    if self.pickBetterQuality(uncheckedSong, checkedSong) == self.FIRST_SONG:
+                    if (
+                        self.pickBetterQuality(uncheckedSong, checkedSong)
+                        == self.FIRST_SONG
+                    ):
                         del filteredList[checkedSongIndex]
                         filteredList.append(uncheckedSong)
                         duplicateList.append(checkedSong)
-                    elif self.pickBetterQuality(uncheckedSong, checkedSong) == self.SECOND_SONG:
+                    elif (
+                        self.pickBetterQuality(uncheckedSong, checkedSong)
+                        == self.SECOND_SONG
+                    ):
                         duplicateList.append(uncheckedSong)
                     break
-        sortedSongListsDict = {"filteredList" : filteredList, "duplicateList" : duplicateList}             
+        sortedSongListsDict = {
+            "filteredList": filteredList,
+            "duplicateList": duplicateList,
+        }
         return sortedSongListsDict
 
     # Gets the similarity of the title and artist of two songs and determines if they are duplicates
@@ -65,9 +80,11 @@ class DuplicateManager:
             return False
         titleSimilarity = self.getSimilarityRating(firstSong.title, secondSong.title)
         if titleSimilarity > 95:
-            artistSimilarity = self.getSimilarityRating(firstSong.artist, secondSong.artist)
+            artistSimilarity = self.getSimilarityRating(
+                firstSong.artist, secondSong.artist
+            )
             similarityIndex = (artistSimilarity + titleSimilarity) / 2
-            if(similarityIndex > self.DUPLICATE_THRESHOLD):
+            if similarityIndex > self.DUPLICATE_THRESHOLD:
                 return True
         else:
             return False
@@ -76,9 +93,9 @@ class DuplicateManager:
     def getSimilarityRating(self, firstString: str, secondString: str):
         return fuzz.token_set_ratio(firstString, secondString)
 
-    # Checks if the song is remix       
+    # Checks if the song is remix
     def isRemix(self, firstSongTitle: str, secondSongTitle: str):
-        remixDenoters = ['remix', 'acoustic', 'instrumental']
+        remixDenoters = ["remix", "acoustic", "instrumental"]
         for denoter in remixDenoters:
             if denoter in firstSongTitle.lower() or denoter in secondSongTitle.lower():
                 return True

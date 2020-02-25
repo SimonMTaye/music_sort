@@ -16,8 +16,10 @@ class MetadataHolder:
     name: str
     extension: str
 
+
 def __eq__(self, other: MetadataHolder):
-    return (self.title,
+    return (
+        self.title,
         self.album,
         self.albumartist,
         self.artist,
@@ -27,8 +29,7 @@ def __eq__(self, other: MetadataHolder):
         self.year,
         self.path,
         self.name,
-        self.extension ==
-        other.title,
+        self.extension == other.title,
         other.album,
         other.albumartist,
         other.artist,
@@ -38,5 +39,5 @@ def __eq__(self, other: MetadataHolder):
         other.year,
         other.path,
         other.name,
-        other.extension )
-        
+        other.extension,
+    )

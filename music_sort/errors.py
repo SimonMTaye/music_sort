@@ -1,2 +1,2 @@
-class IllegalFileNameError (Exception):
+class IllegalFileNameError(Exception):
     pass
