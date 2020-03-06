@@ -1,5 +1,6 @@
 import fire
 import time
+import os
 
 from . import duplicateManager
 from . import metadataParser
@@ -14,7 +15,7 @@ SUPPORTED_FILE_TYPES = tuple(["mp3", "m4a", "flac", "ogg", "wav"])
 
 
 def sortMusic(
-    dir,
+    dir=os.getcwd(),
     recursive=True,
     sortingProperties=tuple(["albumartist", "album"]),
     useTrackTitle=False,
