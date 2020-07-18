@@ -1,12 +1,10 @@
 import fire
-import time
 import os
 
-from . import duplicateManager
-from . import metadataParser
-from . import fileScanner
-from . import pathSorter
-
+from . import duplicate_manager
+from . import metadata_parser
+from . import file_scanner
+from . import path_sorter
 
 # TODO:  add multiprocessing
 
@@ -14,70 +12,61 @@ PROPERTIES_TUPLE = tuple(["artist", "genre", "album", "bitrate", "albumartist", 
 SUPPORTED_FILE_TYPES = tuple(["mp3", "m4a", "flac", "ogg", "wav"])
 
 
-def sortMusic(
-    dir=os.getcwd(),
-    recursive=True,
-    sortingProperties=tuple(["albumartist", "album"]),
-    useTrackTitle=False,
-    musicFileTypes=["mp3", "m4a", "flac"],
-    checkForDuplicates=True,
-):
-    # Verify that given parameters are appropirate, raise ValueError if not
-    verifySortingProperties(sortingProperties)
-    verifyFileTypes(musicFileTypes)
-    if recursive:
-        start = time.time()
-        print("Scanning Files...")
-        scannedFiles = fileScanner.scanFolderRecursively(dir, musicFileTypes)
-        end = time.time()
-        print("File scanning took: " + str(end - start))
-    elif not recursive:
-        scannedFiles = fileScanner.scanFolder(dir, musicFileTypes)
-    start = time.time()
-    parsedSongs = metadataParser.parseSongList(scannedFiles)
-    end = time.time()
-    print("Parsing songs took: " + str(end - start))
-    duplicateMan = duplicateManager.DuplicateManager(parsedSongs, dir)
-    if checkForDuplicates:
-        start = time.time()
-        checkedSongs = duplicateMan.filterDuplicates(tuple(parsedSongs))
-        filteredSongs = checkedSongs["filteredList"]
-        duplicateSongs = checkedSongs["duplicateList"]
-        end = time.time()
-        print("Duplicate sorting took: " + str(end - start))
-        start = time.time()
-        pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
-        pathMan.moveSongs(filteredSongs, duplicateSongs)
-        end = time.time()
-        print("Moving songs took: " + str(end - start))
-    else:
-        start = time.time()
-        pathMan = pathSorter.PathSorter(sortingProperties, dir, useTrackTitle)
-        pathMan.moveSongs(parsedSongs, [])
-        end = time.time()
-        print("Moving songs took: " + str(end - start))
-
-
-def verifySortingProperties(userProperties):
+def verify_sorting_properties(user_properties):
     """ Verify that given sorting properties are appropirate, raise ValueError if not"""
-    for property in userProperties:
-        if property not in PROPERTIES_TUPLE:
+    for attribute in user_properties:
+        if attribute not in PROPERTIES_TUPLE:
             raise ValueError(
                 "Unsupported value "
-                + property
+                + attribute
                 + ' used as sorting property. Use: "artist", "genre", "album", "bitrate", "albumartist" or "year"'
             )
 
 
-def verifyFileTypes(userFileTypes):
+def verify_file_types(userFileTypes):
     """ Verify that given file types are appropirate, raise ValueError if not"""
-    for type in userFileTypes:
-        if type not in SUPPORTED_FILE_TYPES:
+    for file_type in userFileTypes:
+        if file_type not in SUPPORTED_FILE_TYPES:
             raise ValueError(
                 "Unsupported music file type "
-                + property
+                + file_type
                 + ". Use: mp3, m4a, flac, ogg or wav"
             )
+
+
+def sortMusic(
+        root_dir=os.getcwd(),
+        recursive=True,
+        sorting_properties=tuple(["albumartist", "album"]),
+        keep_file_name=True,
+        music_file_types=tuple(["mp3", "m4a", "flac"]),
+        check_for_duplicates=True,
+        do_deep_duplicate_search=False,
+        multiprocessing: bool = False
+):
+    # Verify that given parameters are appropirate, raise ValueError if not
+    verify_sorting_properties(sorting_properties)
+    verify_file_types(music_file_types)
+
+    print("Scanning for music...")
+    scanned_files = file_scanner.scan_folder(root_dir, music_file_types, recursive)
+    print("Parsing scanned music..")
+    parsed_songs = metadata_parser.parse_song_list(scanned_files)
+
+    if check_for_duplicates:
+        print("Checking for duplicates...")
+        if do_deep_duplicate_search:
+            checked_songs = duplicate_manager.deep_filter(parsed_songs)
+        else:
+            checked_songs = duplicate_manager.shallow_filter(parsed_songs, multiprocessing)
+        filtered_songs = checked_songs[0]
+        duplicate_songs = checked_songs[1]
+    else:
+        filtered_songs = parsed_songs
+        duplicate_songs = []
+    print("Moving songs to new directories")
+    path_man = path_sorter.PathSorter(sorting_properties, root_dir, keep_file_name)
+    path_man.move_songs(filtered_songs, duplicate_songs)
 
 
 if __name__ == "__main__":

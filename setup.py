@@ -4,7 +4,6 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
-    name="movie_sort", # Replace with your own username
     version="0.6.2",
     author="Simon Mulat",
     author_email="mulat.simon@gmail.com",
